@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.4.30"
+    kotlin("multiplatform") version "1.4.31"
 }
 
 group = "nl.avwie"
@@ -12,12 +12,10 @@ repositories {
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-        testRuns["test"].executionTask.configure {
-            useJUnit()
+            kotlinOptions.jvmTarget = "12"
         }
     }
+
     sourceSets {
         val commonMain by getting
         val commonTest by getting {
