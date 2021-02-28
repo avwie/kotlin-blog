@@ -1,5 +1,8 @@
-package nl.avwie.kotlin.composition.delegates
+package nl.avwie.kotlin.composition.delegates.companions
 
+import nl.avwie.kotlin.composition.delegates.Drawable
+import nl.avwie.kotlin.composition.delegates.builders.build
+import nl.avwie.kotlin.composition.delegates.extensions.berserkAttack
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -33,5 +36,15 @@ class ImplementationTests {
             println(drawable.position)
             println(drawable.spriteData)
         }
+    }
+
+    @Test
+    fun extensionTest() {
+        val berserkPlayer = Player.new(name = "Almost dead", health = 7, position = 0.0 to 0.0, damage = 30)
+        val unfortunateOrc = Orc.new(position = 5.0 to 0.0,  damage = 30)
+
+        println(unfortunateOrc.health) // prints 150
+        berserkPlayer.berserkAttack(unfortunateOrc)
+        println(unfortunateOrc.health) // prints 90
     }
 }

@@ -5,7 +5,7 @@ interface Health {
     val isDead: Boolean
 
     fun damage(amount: Int)
-    fun replenish(amount: Int)
+    fun eat(edible: Edible)
 }
 
 interface Sprite {
@@ -31,4 +31,8 @@ interface Dangerous {
     val damage: Int
 
     fun attack(other: Health)
+}
+
+interface Edible {
+    val nutritionalValue: Int
 }
