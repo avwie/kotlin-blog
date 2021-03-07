@@ -2,7 +2,7 @@ package nl.avwie.kotlin.composition.components.native
 
 interface ComponentKey<C>
 
-data class VariableComponentKey<C, T>(val variable: T): ComponentKey<C>
+data class ParameterizedComponentKey<C, T>(val parameter: T): ComponentKey<C>
 
 interface Component<C> {
     val key: ComponentKey<C>
@@ -32,7 +32,7 @@ class Sprite(val spriteData: ByteArray, val type: SpriteTypeEnum) : Component<Sp
     override val key = Key[type]
 
     object Key {
-        operator fun get(type: SpriteTypeEnum): ComponentKey<Sprite> = VariableComponentKey(type)
+        operator fun get(type: SpriteTypeEnum): ComponentKey<Sprite> = ParameterizedComponentKey(type)
     }
 }
 
