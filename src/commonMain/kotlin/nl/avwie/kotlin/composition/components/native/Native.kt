@@ -1,93 +1,94 @@
 package nl.avwie.kotlin.composition.components.native
 
-interface Key<C>
+interface ComponentKey<C>
 
-interface HasKey<C> {
-    val key: Key<C>
+data class VariableComponentKey<C, T>(val variable: T): ComponentKey<C>
+
+interface Component<C> {
+    val key: ComponentKey<C>
+}
+
+class Health(initialAmount: Int) : Component<Health> {
+    override val key = Key
+
+    var currentHealth = initialAmount
+        private set
+
+    val isDead: Boolean get() = currentHealth <= 0
+
+    fun damage(amount: Int) {
+        currentHealth -= amount
+    }
+
+    object Key : ComponentKey<Health>
 }
 
 enum class SpriteTypeEnum {
-    Background,
-    Foreground
+    Foreground,
+    Background;
 }
 
-object Keys {
-    object Health : Key<Components.Health>
-    data class Sprite(val type: SpriteTypeEnum) : Key<Components.Sprite>
-    object Dynamics : Key<Components.Dynamics>
+class Sprite(val spriteData: ByteArray, val type: SpriteTypeEnum) : Component<Sprite> {
+    override val key = Key[type]
+
+    object Key {
+        operator fun get(type: SpriteTypeEnum): ComponentKey<Sprite> = VariableComponentKey(type)
+    }
 }
 
-object Components {
+class Dynamics(
+    val mass: Double,
+    sx0: Double,
+    sy0: Double,
+    vx0: Double = 0.0,
+    vy0: Double = 0.0,
+    ax0: Double = 0.0,
+    ay0: Double = 0.0
+) : Component<Dynamics> {
+    override val key = Key
 
-    class Health(initialAmount: Int) : HasKey<Health> {
-        override val key: Key<Health> = Keys.Health
+    var position = sx0 to sy0
+        private set
 
-        var currentHealth = initialAmount
-            private set
+    var velocity = vx0 to vy0
+        private set
 
-        val isDead: Boolean get() = currentHealth <= 0
+    var acceleration = ax0 to ay0
+        private set
 
-        fun damage(amount: Int) {
-            currentHealth -= amount
-        }
+    fun applyForce(amount: Pair<Double, Double>) {
+        val (ax, ay) = acceleration
+        val (fx, fy) = amount
+        acceleration = ax + fx / mass to ay + fy / mass
     }
 
-    class Sprite(val spriteData: ByteArray, val type: SpriteTypeEnum) : HasKey<Sprite> {
-        override val key: Key<Sprite> = Keys.Sprite(type)
+    fun updateDynamics(dt: Double) {
+        val (ax, ay) = acceleration
+        val (vx, vy) = velocity
+        val (sx, sy) = position
+
+        // this is clearly naive, since this is not deterministic, however... it serves the purpose for this post
+        velocity = vx + ax * dt to vy + ay * dt
+        position = sx + vx * dt to sy + vy * dt
     }
 
-    class Dynamics(
-        val mass: Double,
-        sx0: Double,
-        sy0: Double,
-        vx0: Double = 0.0,
-        vy0: Double = 0.0,
-        ax0: Double = 0.0,
-        ay0: Double = 0.0
-    ) : HasKey<Dynamics> {
-        override val key: Key<Dynamics> = Keys.Dynamics
-
-        var position = sx0 to sy0
-            private set
-
-        var velocity = vx0 to vy0
-            private set
-
-        var acceleration = ax0 to ay0
-            private set
-
-        fun applyForce(amount: Pair<Double, Double>) {
-            val (ax, ay) = acceleration
-            val (fx, fy) = amount
-            acceleration = ax + fx / mass to ay + fy / mass
-        }
-
-        fun updateDynamics(dt: Double) {
-            val (ax, ay) = acceleration
-            val (vx, vy) = velocity
-            val (sx, sy) = position
-
-            // this is clearly naive, since this is not deterministic, however... it serves the purpose for this post
-            velocity = vx + ax * dt to vy + ay * dt
-            position = sx + vx * dt to sy + vy * dt
-        }
-    }
+    object Key : ComponentKey<Dynamics>
 }
 
 interface ComponentHolder {
-    fun setComponent(component: HasKey<*>)
-    fun <C> getComponent(key: Key<C>): C?
+    fun setComponent(component: Component<*>)
+    fun <C> getComponent(key: ComponentKey<C>): C?
 }
 
 class MapComponentHolder : ComponentHolder {
-    private val components = mutableMapOf<Key<*>, Any>()
+    private val components = mutableMapOf<ComponentKey<*>, Any>()
 
-    override fun setComponent(component: HasKey<*>) {
+    override fun setComponent(component: Component<*>) {
         components[component.key] = component
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <C> getComponent(key: Key<C>): C? {
+    override fun <C> getComponent(key: ComponentKey<C>): C? {
         return components[key] as? C
     }
 }

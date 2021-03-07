@@ -9,20 +9,20 @@ class NativeTests {
     @Test
     fun simple() {
         val player = Entity(Random.nextLong())
-        player.setComponent(Components.Health(100))
-        player.setComponent(Components.Dynamics(100.0, 5.0, 2.0))
+        player.setComponent(Health(100))
+        player.setComponent(Dynamics(100.0, 5.0, 2.0))
 
-        assertEquals(100, player.getComponent(Keys.Health)?.currentHealth)
-        assertEquals(5.0 to 2.0, player.getComponent(Keys.Dynamics)?.position)
+        assertEquals(100, player.getComponent(Health.Key)?.currentHealth)
+        assertEquals(5.0 to 2.0, player.getComponent(Dynamics.Key)?.position)
     }
 
     @Test
     fun sprite() {
         val world = Entity(Random.nextLong())
-        world.setComponent(Components.Sprite("Foreground".encodeToByteArray(), SpriteTypeEnum.Foreground))
-        world.setComponent(Components.Sprite("Background".encodeToByteArray(), SpriteTypeEnum.Background))
+        world.setComponent(Sprite("Foreground".encodeToByteArray(), SpriteTypeEnum.Foreground))
+        world.setComponent(Sprite("Background".encodeToByteArray(), SpriteTypeEnum.Background))
 
-        assertEquals("Foreground", world.getComponent(Keys.Sprite(SpriteTypeEnum.Foreground))?.spriteData?.decodeToString())
-        assertEquals("Background", world.getComponent(Keys.Sprite(SpriteTypeEnum.Background))?.spriteData?.decodeToString())
+        assertEquals("Foreground", world.getComponent(Sprite.Key[SpriteTypeEnum.Foreground])?.spriteData?.decodeToString())
+        assertEquals("Background", world.getComponent(Sprite.Key[SpriteTypeEnum.Background])?.spriteData?.decodeToString())
     }
 }
