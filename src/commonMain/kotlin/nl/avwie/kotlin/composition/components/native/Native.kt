@@ -4,11 +4,11 @@ interface ComponentKey<C>
 
 data class ParameterizedComponentKey<C, T>(val parameter: T): ComponentKey<C>
 
-interface Component<C> {
-    val key: ComponentKey<C>
+interface Component {
+    val key: ComponentKey<*>
 }
 
-class Health(initialAmount: Int) : Component<Health> {
+class Health(initialAmount: Int) : Component {
     override val key = Key
 
     var currentHealth = initialAmount
@@ -28,7 +28,7 @@ enum class SpriteTypeEnum {
     Background;
 }
 
-class Sprite(val spriteData: ByteArray, val type: SpriteTypeEnum) : Component<Sprite> {
+class Sprite(val spriteData: ByteArray, val type: SpriteTypeEnum) : Component {
     override val key = Key[type]
 
     object Key {
@@ -44,7 +44,7 @@ class Dynamics(
     vy0: Double = 0.0,
     ax0: Double = 0.0,
     ay0: Double = 0.0
-) : Component<Dynamics> {
+) : Component {
     override val key = Key
 
     var position = sx0 to sy0
@@ -76,14 +76,14 @@ class Dynamics(
 }
 
 interface ComponentHolder {
-    fun setComponent(component: Component<*>)
+    fun setComponent(component: Component)
     fun <C> getComponent(key: ComponentKey<C>): C?
 }
 
 class MapComponentHolder : ComponentHolder {
     private val components = mutableMapOf<ComponentKey<*>, Any>()
 
-    override fun setComponent(component: Component<*>) {
+    override fun setComponent(component: Component) {
         components[component.key] = component
     }
 
@@ -95,3 +95,7 @@ class MapComponentHolder : ComponentHolder {
 
 class Entity(val id: Long, private val components: ComponentHolder = MapComponentHolder()) :
     ComponentHolder by components
+
+operator fun <C> ComponentHolder.get(key: ComponentKey<C>): C? = this.getComponent(key)
+operator fun ComponentHolder.plusAssign(component: Component) = this.setComponent(component)
+fun <C> ComponentHolder.getOrElse(key: ComponentKey<C>, block: () -> C) = this.getComponent(key) ?: block()

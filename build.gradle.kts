@@ -17,6 +17,7 @@ kotlin {
     }
 
     js {
+        nodejs()
     }
 
     sourceSets {

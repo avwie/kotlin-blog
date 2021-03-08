@@ -25,4 +25,16 @@ class NativeTests {
         assertEquals("Foreground", world.getComponent(Sprite.Key[SpriteTypeEnum.Foreground])?.spriteData?.decodeToString())
         assertEquals("Background", world.getComponent(Sprite.Key[SpriteTypeEnum.Background])?.spriteData?.decodeToString())
     }
+
+    @Test
+    fun extensions() {
+        val player = Entity(Random.nextLong())
+        player += Health(100)
+        player += Sprite(ByteArray(0), SpriteTypeEnum.Foreground)
+
+        val position = player.getOrElse(Dynamics.Key) { Dynamics(100.0, 0.0, 0.0) }
+
+        assertEquals(100, player[Health.Key]?.currentHealth)
+        assertEquals(0.0, position.position.first)
+    }
 }
