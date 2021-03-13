@@ -3,12 +3,12 @@ package nl.avwie.ecs
 import nl.avwie.common.UUID
 import kotlin.test.*
 
-abstract class ECSTests {
-    abstract fun createECS(): ECS
+abstract class BackendTests {
+    abstract fun createBackend(): Backend
 
     @Test
     fun create() {
-        val ecs = createECS()
+        val ecs = createBackend()
         val e1 = ecs.create()
         val e2 = ecs.create()
         assertNotEquals(e1, e2)
@@ -19,7 +19,7 @@ abstract class ECSTests {
 
     @Test
     fun createDoubleFails() {
-        val ecs = createECS()
+        val ecs = createBackend()
         val e1 = ecs.create()
         assertFails {
             ecs.create(e1)
@@ -28,7 +28,7 @@ abstract class ECSTests {
 
     @Test
     fun set() {
-        val ecs = createECS()
+        val ecs = createBackend()
         val e1 = ecs.create()
 
         assertFalse { ecs.has(e1, Name.Key) }

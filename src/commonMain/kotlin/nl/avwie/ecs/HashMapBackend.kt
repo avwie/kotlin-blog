@@ -2,7 +2,7 @@ package nl.avwie.ecs
 
 import nl.avwie.common.UUID
 
-class HashMapECS : ECS {
+class HashMapBackend : Backend {
     private val components = mutableMapOf<UUID, MutableMap<ComponentKey<*>, Component<*>>>()
 
     override fun create(id: UUID?): UUID = (id ?: UUID.random()).also {
@@ -16,6 +16,8 @@ class HashMapECS : ECS {
         requireExists(it)
         components.remove(it)
     }
+
+    override fun entities(): Sequence<UUID> = components.keys.asSequence()
 
     override fun <C : Component<C>> set(id: UUID, component: C): C? {
         requireExists(id)

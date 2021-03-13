@@ -8,10 +8,11 @@ interface Component<C> {
     val key: ComponentKey<C>
 }
 
-interface ECS {
+interface Backend {
     fun create(id: UUID? = null): UUID
     fun exists(id: UUID): Boolean
     fun destroy(id: UUID): UUID
+    fun entities(): Sequence<UUID>
 
     fun <C : Component<C>> set(id: UUID, component: C): C?
     fun has(id: UUID, key: ComponentKey<*>): Boolean
