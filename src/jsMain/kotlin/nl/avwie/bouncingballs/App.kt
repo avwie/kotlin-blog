@@ -20,16 +20,16 @@ fun main() {
 
 class BouncingBalls(ctx: CanvasRenderingContext2D) {
 
-    val backend = HashMapBackend()
-    val dynamicsSystem = DynamicsSystem()
-    val gravitySystem = GravitySystem(300.0)
-    val floorSystem = FloorSystem(ctx.canvas.height.toDouble())
-    val spawnerAndDestroySystem = SpawnAndDestroySystem(
+    val backend = HashMapBackend.default()
+    val dynamicsSystem = DynamicsSystem<Int>()
+    val gravitySystem = GravitySystem<Int>(300.0)
+    val floorSystem = FloorSystem<Int>(ctx.canvas.height.toDouble())
+    val spawnerAndDestroySystem = SpawnAndDestroySystem<Int>(
         bounds = rect2D(0.0, 0.0, ctx.canvas.width.toDouble(), ctx.canvas.height.toDouble()),
-        spawnTotal = 100,
+        spawnTotal = 500,
         spawnVelocity = 100.0 to 300.0
     )
-    val drawingSystem = DrawingSystem(10.0, ctx)
+    val drawingSystem = DrawingSystem<Int>(10.0, ctx)
 
     val runner = SystemsRunner(backend,
         spawnerAndDestroySystem,

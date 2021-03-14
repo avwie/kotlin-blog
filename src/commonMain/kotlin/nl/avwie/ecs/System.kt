@@ -2,12 +2,12 @@ package nl.avwie.ecs
 
 import nl.avwie.common.UUID
 
-interface System {
+interface System<Id> {
     val keys : Set<ComponentKey<*>>
-    var backend: Backend
+    var backend: Backend<Id>
 
     fun beforeInvoke()
-    operator fun invoke(entity: UUID)
+    operator fun invoke(entity: Id)
     fun afterInvoke()
 }
 

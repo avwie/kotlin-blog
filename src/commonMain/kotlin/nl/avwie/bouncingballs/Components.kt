@@ -33,12 +33,15 @@ data class Color(
     val green: Int,
     val blue: Int
 ): Component<Color> {
+
     companion object : ComponentKey<Color> {
         fun random(): Color = Color(Random.nextInt(0, 256), Random.nextInt(0, 256), Random.nextInt(0, 256))
     }
     override val key: ComponentKey<Color> = Color
 
+    val hexCode = "#" + listOf(red, green, blue).joinToString(separator = "") { it.coerceIn(0, 255).toString(16) }
+
     override fun toString(): String {
-        return "#" + listOf(red, green, blue).joinToString(separator = "") { it.coerceIn(0, 255).toString(16) }
+        return hexCode
     }
 }

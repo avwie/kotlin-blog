@@ -1,13 +1,12 @@
 package nl.avwie.bouncingballs
 
-import nl.avwie.common.UUID
 import nl.avwie.ecs.AbstractSystem
 import nl.avwie.ecs.ComponentKey
 import nl.avwie.ecs.extensions.query
 import org.w3c.dom.CanvasRenderingContext2D
 import kotlin.math.PI
 
-class DrawingSystem(val radius: Double, val ctx: CanvasRenderingContext2D) : AbstractSystem() {
+class DrawingSystem<Id>(val radius: Double, val ctx: CanvasRenderingContext2D) : AbstractSystem<Id>() {
     override val keys: Set<ComponentKey<*>> = setOf(Color, Dynamics)
 
     override fun beforeInvoke() {
@@ -15,7 +14,7 @@ class DrawingSystem(val radius: Double, val ctx: CanvasRenderingContext2D) : Abs
         ctx.clearRect(0.0, 0.0, ctx.canvas.width.toDouble(), ctx.canvas.height.toDouble())
     }
 
-    override fun invoke(entity: UUID) {
+    override fun invoke(entity: Id) {
         backend.query(entity, Dynamics, Color) { dynamics, color ->
             ctx.fillStyle = color.toString()
             ctx.beginPath()

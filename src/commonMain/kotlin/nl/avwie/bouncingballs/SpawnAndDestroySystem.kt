@@ -1,27 +1,26 @@
 package nl.avwie.bouncingballs
 
 import nl.avwie.common.Rectangle
-import nl.avwie.common.UUID
 import nl.avwie.ecs.AbstractSystem
 import nl.avwie.ecs.ComponentKey
 import kotlin.random.Random
 
-class SpawnAndDestroySystem(
+class SpawnAndDestroySystem<Id>(
     val bounds: Rectangle<Double>,
     val spawnTotal: Int,
     val spawnVelocity: Pair<Double, Double>
-) : AbstractSystem() {
+) : AbstractSystem<Id>() {
     override val keys: Set<ComponentKey<*>> = setOf(Dynamics)
 
     private var totalEntities: Int = 0
-    private val entitiesToDestroy = mutableListOf<UUID>()
+    private val entitiesToDestroy = mutableListOf<Id>()
 
     override fun beforeInvoke() {
         totalEntities = 0
         entitiesToDestroy.clear()
     }
 
-    override fun invoke(entity: UUID) {
+    override fun invoke(entity: Id) {
         backend.get(entity, Dynamics).also { dynamics ->
             if (bounds.contains(dynamics.position)) {
                 totalEntities += 1

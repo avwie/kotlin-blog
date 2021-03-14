@@ -1,6 +1,6 @@
 package nl.avwie.ecs
 
-class SystemsRunner(val backend: Backend, vararg val systems: System) {
+class SystemsRunner<Id>(val backend: Backend<Id>, vararg val systems: System<Id>) {
 
     init {
         systems.forEach { system ->

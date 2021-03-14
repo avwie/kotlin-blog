@@ -1,12 +1,10 @@
 package nl.avwie.ecs
 
-import nl.avwie.common.UUID
-
-class ParallelSystem(vararg val systems: System) : AbstractSystem() {
+class ParallelSystem<Id>(vararg val systems: System<Id>) : AbstractSystem<Id>() {
 
     override val keys: Set<ComponentKey<*>> = systems.fold(setOf()) { acc, system -> acc + system.keys }
 
-    override var backend: Backend
+    override var backend: Backend<Id>
         get() = super.backend
         set(value) {
             systems.forEach { system ->
@@ -27,7 +25,7 @@ class ParallelSystem(vararg val systems: System) : AbstractSystem() {
         }
     }
 
-    override fun invoke(entity: UUID) {
+    override fun invoke(entity: Id) {
         systems.forEach { system ->
             system.invoke(entity)
         }
