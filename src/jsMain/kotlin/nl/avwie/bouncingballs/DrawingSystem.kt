@@ -3,15 +3,20 @@ package nl.avwie.bouncingballs
 import nl.avwie.ecs.AbstractSystem
 import nl.avwie.ecs.ComponentKey
 import nl.avwie.ecs.extensions.query
-import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.*
 import kotlin.math.PI
 
-class DrawingSystem<Id>(val radius: Double, val ctx: CanvasRenderingContext2D) : AbstractSystem<Id>() {
+class DrawingSystem<Id>(val radius: Double, val canvas: HTMLCanvasElement) : AbstractSystem<Id>() {
     override val keys: Set<ComponentKey<*>> = setOf(Color, Dynamics)
+
+    private val offscreen = OffscreenCanvas(canvas.width, canvas.height)
+    private val ctx: OffscreenCanvasRenderingContext2D = offscreen.getContext("2d") as OffscreenCanvasRenderingContext2D
+    private val target: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D
 
     override fun beforeInvoke() {
         ctx.save()
-        ctx.clearRect(0.0, 0.0, ctx.canvas.width.toDouble(), ctx.canvas.height.toDouble())
+        target.clearRect(0.0, 0.0, canvas.width.toDouble(), ctx.canvas.height.toDouble())
+        ctx.clearRect(0.0, 0.0, canvas.width.toDouble(), ctx.canvas.height.toDouble())
     }
 
     override fun invoke(entity: Id) {
@@ -25,5 +30,6 @@ class DrawingSystem<Id>(val radius: Double, val ctx: CanvasRenderingContext2D) :
 
     override fun afterInvoke() {
         ctx.restore()
+        target.drawImage(offscreen.transferToImageBitmap(), 0.0, 0.0)
     }
 }

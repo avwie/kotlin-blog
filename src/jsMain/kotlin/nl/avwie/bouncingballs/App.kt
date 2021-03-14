@@ -2,34 +2,37 @@ package nl.avwie.bouncingballs
 
 import kotlinx.browser.document
 import kotlinx.browser.window
+import nl.avwie.ecs.ArrayBackend
 import nl.avwie.ecs.HashMapBackend
 import nl.avwie.ecs.ParallelSystem
 import nl.avwie.ecs.SystemsRunner
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
+import org.w3c.dom.url.URLSearchParams
 
 fun main() {
     val canvas = document.getElementById("canvas") as? HTMLCanvasElement
-    val ctx = canvas?.getContext("2d") as? CanvasRenderingContext2D
 
-    ctx?.also {
-        val app = BouncingBalls(ctx)
+    val params = URLSearchParams(window.location.search)
+
+    canvas?.also {
+        val app = BouncingBalls(canvas, params.get("count")?.toIntOrNull() ?: 10)
         app.start()
     }
 }
 
-class BouncingBalls(ctx: CanvasRenderingContext2D) {
+class BouncingBalls(canvas: HTMLCanvasElement, count: Int) {
 
-    val backend = HashMapBackend.default()
+    val backend = ArrayBackend(count)
     val dynamicsSystem = DynamicsSystem<Int>()
     val gravitySystem = GravitySystem<Int>(300.0)
-    val floorSystem = FloorSystem<Int>(ctx.canvas.height.toDouble())
+    val floorSystem = FloorSystem<Int>(canvas.height.toDouble())
     val spawnerAndDestroySystem = SpawnAndDestroySystem<Int>(
-        bounds = rect2D(0.0, 0.0, ctx.canvas.width.toDouble(), ctx.canvas.height.toDouble()),
-        spawnTotal = 500,
+        bounds = rect2D(0.0, 0.0, canvas.width.toDouble(), canvas.height.toDouble()),
+        spawnTotal = count,
         spawnVelocity = 100.0 to 300.0
     )
-    val drawingSystem = DrawingSystem<Int>(10.0, ctx)
+    val drawingSystem = DrawingSystem<Int>(10.0, canvas)
 
     val runner = SystemsRunner(backend,
         spawnerAndDestroySystem,
