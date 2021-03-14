@@ -3,6 +3,7 @@ package nl.avwie.bouncingballs
 import kotlinx.browser.document
 import kotlinx.browser.window
 import nl.avwie.ecs.HashMapBackend
+import nl.avwie.ecs.ParallelSystem
 import nl.avwie.ecs.SystemsRunner
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
@@ -25,11 +26,16 @@ class BouncingBalls(ctx: CanvasRenderingContext2D) {
     val floorSystem = FloorSystem(ctx.canvas.height.toDouble())
     val spawnerAndDestroySystem = SpawnAndDestroySystem(
         bounds = rect2D(0.0, 0.0, ctx.canvas.width.toDouble(), ctx.canvas.height.toDouble()),
-        spawnTotal = 50,
+        spawnTotal = 100,
         spawnVelocity = 100.0 to 300.0
     )
     val drawingSystem = DrawingSystem(10.0, ctx)
-    val runner = SystemsRunner(backend, spawnerAndDestroySystem, gravitySystem, dynamicsSystem, floorSystem, drawingSystem)
+
+    val runner = SystemsRunner(backend,
+        spawnerAndDestroySystem,
+        ParallelSystem(gravitySystem, dynamicsSystem, floorSystem),
+        drawingSystem
+    )
 
     private var lastTimeStamp = 0.0
     private var dt = 0.0

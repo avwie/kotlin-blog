@@ -2,7 +2,7 @@ package nl.avwie.ecs
 
 import nl.avwie.common.UUID
 
-class HashMapBackend : Backend {
+class HashMapBackend(val strict: Boolean = false) : Backend {
     private val components = mutableMapOf<UUID, MutableMap<ComponentKey<*>, Component<*>>>()
 
     override fun create(id: UUID?): UUID = (id ?: UUID.random()).also {
@@ -41,10 +41,12 @@ class HashMapBackend : Backend {
     }
 
     private fun requireExists(id: UUID) {
+        if (!strict) return
         require(exists(id)) { "Entity $id does not exist!" }
     }
 
     private fun requireHas(id: UUID, key: ComponentKey<*>) {
+        if (!strict) return
         requireExists(id)
         require(has(id, key)) { "Entity $id does not have a component with key $key"}
     }

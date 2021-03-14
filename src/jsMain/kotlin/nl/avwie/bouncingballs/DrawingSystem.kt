@@ -11,6 +11,7 @@ class DrawingSystem(val radius: Double, val ctx: CanvasRenderingContext2D) : Abs
     override val keys: Set<ComponentKey<*>> = setOf(Color, Dynamics)
 
     override fun beforeInvoke() {
+        ctx.save()
         ctx.clearRect(0.0, 0.0, ctx.canvas.width.toDouble(), ctx.canvas.height.toDouble())
     }
 
@@ -21,5 +22,9 @@ class DrawingSystem(val radius: Double, val ctx: CanvasRenderingContext2D) : Abs
             ctx.arc(dynamics.position.x, dynamics.position.y, radius, 0.0, 2 * PI)
             ctx.fill()
         }
+    }
+
+    override fun afterInvoke() {
+        ctx.restore()
     }
 }
