@@ -17,8 +17,16 @@ kotlin {
         }
     }
 
-    js {
-        nodejs()
+    js(LEGACY) {
+        browser {
+            binaries.executable()
+
+            testTask {
+                useKarma {
+                    useChromeHeadless()
+                }
+            }
+        }
     }
 
     sourceSets {

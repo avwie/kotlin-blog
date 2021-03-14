@@ -4,8 +4,7 @@ import nl.avwie.common.UUID
 
 interface System {
     val keys : Set<ComponentKey<*>>
-
-    fun setBackend(backend: Backend)
+    var backend: Backend
 
     fun beforeInvoke()
     operator fun invoke(entity: UUID)

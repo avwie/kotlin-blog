@@ -4,7 +4,7 @@ class SystemsRunner(val backend: Backend, vararg val systems: System) {
 
     init {
         systems.forEach { system ->
-            system.setBackend(backend)
+            system.backend = backend
         }
     }
 

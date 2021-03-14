@@ -7,9 +7,9 @@ import kotlin.random.Random
 
 class Dynamics(
     val mass: Double,
-    initialPosition: Vector2D<Double>,
-    initialVelocity: Vector2D<Double>,
-    initialAcceleration: Vector2D<Double>
+    initialPosition: Vector2D<Double> = vec2D.zero,
+    initialVelocity: Vector2D<Double> = vec2D.zero,
+    initialAcceleration: Vector2D<Double> = vec2D.zero
 ): Component<Dynamics> {
     companion object : ComponentKey<Dynamics>
     override val key: ComponentKey<Dynamics> = Dynamics
@@ -39,6 +39,6 @@ data class Color(
     override val key: ComponentKey<Color> = Color
 
     override fun toString(): String {
-        return "#" + listOf(red, green, blue).joinToString { it.coerceIn(0, 255).toString(16) }
+        return "#" + listOf(red, green, blue).joinToString(separator = "") { it.coerceIn(0, 255).toString(16) }
     }
 }
