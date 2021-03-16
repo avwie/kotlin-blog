@@ -17,7 +17,7 @@ kotlin {
         }
     }
 
-    js("frontend", IR) {
+    js(IR) {
         browser {
             binaries.executable()
         }
@@ -38,8 +38,8 @@ kotlin {
             }
         }
 
-        val frontendMain by getting
-        val frontendTest by getting {
+        val jsMain by getting
+        val jsTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
             }
