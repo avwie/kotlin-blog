@@ -2,7 +2,7 @@ package nl.avwie.ecs
 
 import nl.avwie.bouncingballs.Color
 import nl.avwie.bouncingballs.Dynamics
-import nl.avwie.common.datastructures.Deque
+import nl.avwie.datastructures.Deque
 
 class ArrayBackend(val capacity: Int) : Backend<Int> {
 
@@ -20,12 +20,16 @@ class ArrayBackend(val capacity: Int) : Backend<Int> {
     }
 
     private fun getIndex(): Int {
-        if (freedUpIndices.isNotEmpty()) {
-            return freedUpIndices.popFront()!!
+        if (!freedUpIndices.isEmpty()) {
+            try {
+                return freedUpIndices.popFront()!!
+            } catch (exc: NullPointerException) {
+                println()
+            }
         }
 
         if (currentIndex >= capacity) {
-            println()
+            throw RuntimeException("Amount of entities exceed capacity")
         }
 
         currentIndex += 1
@@ -35,7 +39,7 @@ class ArrayBackend(val capacity: Int) : Backend<Int> {
     override fun exists(id: Int): Boolean = exists[id]
 
     override fun destroy(id: Int): Int {
-        freedUpIndices.prepend(id)
+        freedUpIndices.append(id)
         exists[id] = false
         return id
     }

@@ -13,7 +13,7 @@ repositories {
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "12"
+            kotlinOptions.jvmTarget = "14"
         }
     }
 
@@ -55,4 +55,8 @@ kotlin {
             }
         }
     }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile::class) {
+    kotlinOptions.useIR = true
 }
