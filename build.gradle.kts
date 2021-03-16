@@ -18,28 +18,8 @@ kotlin {
     }
 
     js("frontend", IR) {
-        moduleName = "frontend"
-
         browser {
             binaries.executable()
-
-            webpackTask {
-                outputFileName = "frontend.js"
-                output.library = "frontend"
-            }
-        }
-    }
-
-    js("webworker", IR) {
-        moduleName = "webworker"
-        binaries.executable()
-
-        browser {
-            binaries.executable()
-
-            webpackTask {
-                outputFileName = "webworker.js"
-            }
         }
     }
 
@@ -60,13 +40,6 @@ kotlin {
 
         val frontendMain by getting
         val frontendTest by getting {
-            dependencies {
-                implementation(kotlin("test-js"))
-            }
-        }
-
-        val webworkerMain by getting
-        val webworkerTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
             }
