@@ -17,16 +17,34 @@ kotlin {
         }
     }
 
-    js {
-        nodejs()
+    js("frontend", IR) {
+        moduleName = "frontend"
+
+        browser {
+            binaries.executable()
+
+            webpackTask {
+                outputFileName = "frontend.js"
+                output.library = "frontend"
+            }
+        }
+    }
+
+    js("webworker", IR) {
+        moduleName = "webworker"
+        binaries.executable()
+
+        browser {
+            binaries.executable()
+
+            webpackTask {
+                outputFileName = "webworker.js"
+            }
+        }
     }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation("nl.avwie:kotlin-mpp-common:1.0-SNAPSHOT")
-            }
-        }
+        val commonMain by getting
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
@@ -40,8 +58,15 @@ kotlin {
             }
         }
 
-        val jsMain by getting
-        val jsTest by getting {
+        val frontendMain by getting
+        val frontendTest by getting {
+            dependencies {
+                implementation(kotlin("test-js"))
+            }
+        }
+
+        val webworkerMain by getting
+        val webworkerTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
             }
