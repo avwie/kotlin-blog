@@ -1,9 +1,15 @@
-import org.w3c.dom.WorkerGlobalScope
+import org.w3c.dom.DedicatedWorkerGlobalScope
+import org.w3c.dom.Worker
 
 fun main() {
-    if () {
+    if (js("typeof(WorkerGlobalScope) == \"undefined\"") as Boolean) {
         console.log("In normal scope")
+        val worker = Worker("kotlin-blog.js")
+        worker.postMessage("Hello")
     } else {
-        console.log("In WebWorker scope")
+        val self = js("self") as DedicatedWorkerGlobalScope
+        self.onmessage = { messageEvent ->
+            println("Received from main: " + messageEvent.data)
+        }
     }
 }
