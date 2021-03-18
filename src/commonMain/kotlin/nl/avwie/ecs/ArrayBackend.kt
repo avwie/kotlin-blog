@@ -2,7 +2,7 @@ package nl.avwie.ecs
 
 import nl.avwie.bouncingballs.Color
 import nl.avwie.bouncingballs.Dynamics
-import nl.avwie.datastructures.Deque
+import nl.avwie.common.datastructures.Deque
 
 class ArrayBackend(val capacity: Int) : Backend<Int> {
 

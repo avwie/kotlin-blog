@@ -17,7 +17,7 @@ kotlin {
         }
     }
 
-    js(LEGACY) {
+    js(IR) {
         browser {
             binaries.executable()
 
