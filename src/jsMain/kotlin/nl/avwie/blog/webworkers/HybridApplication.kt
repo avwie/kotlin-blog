@@ -7,21 +7,6 @@ import org.w3c.dom.HTMLScriptElement
 import org.w3c.dom.Window
 import org.w3c.dom.Worker
 
-val isWorkerGlobalScope = js("typeof(WorkerGlobalScope) !== \"undefined\"") as? Boolean  ?: throw IllegalStateException("Boolean cast went wrong")
-
-private fun mainScope(block: Window.() -> Unit) {
-    if (!isWorkerGlobalScope) {
-        block(window)
-    }
-}
-
-private fun workerScope(block: DedicatedWorkerGlobalScope.() -> Unit) {
-    if (isWorkerGlobalScope) {
-        val self = js("self") as? DedicatedWorkerGlobalScope ?: throw IllegalStateException("DedicatedWorkerGlobalScope cast went wrong")
-        block(self)
-    }
-}
-
 fun <TPayload, TResult> launchJob(job: Job<TPayload, TResult>, payload: TPayload, onComplete: (TResult) -> Unit) {
     HybridApplication.instance?.launchJob(job, payload, onComplete)
 }
@@ -77,6 +62,7 @@ class HybridApplication(val handlers: Map<String, Handler<*, *>>, val main: Wind
     }
 
     companion object {
+        private val isWorkerGlobalScope = js("typeof(WorkerGlobalScope) !== \"undefined\"") as? Boolean  ?: throw IllegalStateException("Boolean cast went wrong")
         private val boundary = "___64cf1e111ef74542aed854eb2b926acf___"
         private val scriptSrc: String? = if (!isWorkerGlobalScope) (document.currentScript as? HTMLScriptElement)?.src else null
 
@@ -90,6 +76,19 @@ class HybridApplication(val handlers: Map<String, Handler<*, *>>, val main: Wind
             val app = HybridApplication(builderScope.handlers, builderScope.main)
             instance = app
             app.invoke()
+        }
+
+        private fun mainScope(block: Window.() -> Unit) {
+            if (!isWorkerGlobalScope) {
+                block(window)
+            }
+        }
+
+        private fun workerScope(block: DedicatedWorkerGlobalScope.() -> Unit) {
+            if (isWorkerGlobalScope) {
+                val self = js("self") as? DedicatedWorkerGlobalScope ?: throw IllegalStateException("DedicatedWorkerGlobalScope cast went wrong")
+                block(self)
+            }
         }
     }
 }
