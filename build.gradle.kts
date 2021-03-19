@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform") version "1.4.31"
+    kotlin("plugin.serialization") version "1.4.31"
 }
 
 group = "nl.avwie"
@@ -13,18 +14,21 @@ repositories {
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "12"
+            kotlinOptions.jvmTarget = "14"
         }
     }
 
-    js {
-        nodejs()
+    js(IR) {
+        browser {
+            binaries.executable()
+        }
     }
 
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation("nl.avwie:kotlin-mpp-common:1.0-SNAPSHOT")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
             }
         }
         val commonTest by getting {
