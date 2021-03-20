@@ -7,18 +7,16 @@ import org.w3c.dom.HTMLScriptElement
 import org.w3c.dom.Window
 import org.w3c.dom.Worker
 
-fun <TPayload, TResult> launchJob(job: Job<TPayload, TResult>, payload: TPayload, onComplete: (TResult) -> Unit) {
-    HybridApplication.instance?.launchJob(job, payload, onComplete)
+fun <TPayload, TResult> launchJob(job: Job<TPayload, TResult>) {
+    HybridApplication.instance?.launchJob(job)
 }
 
-class HybridApplication(val handlers: Map<String, Handler<*, *>>, val main: Window.() -> Unit) {
+class HybridApplication(val jobDefinitions: Map<String, JobDefinition<*, *>>, val main: Window.() -> Unit) {
 
-    class Handler<TPayload, TResult>(private val job: Job<TPayload, TResult>)  {
-        fun invoke(incoming: String): String {
-            val payload = job.payloadEncoder.decode(incoming)
-            val result = job.invoke(payload)
-            return job.resultEncoder.encode(result)
-        }
+    fun <TPayload, TResult> JobDefinition<TPayload, TResult>.handle(incoming: String): String {
+        val payload = payloadEncoder.decode(incoming)
+        val result = invoke(payload)
+        return resultEncoder.encode(result)
     }
 
     operator fun invoke() {
@@ -30,24 +28,24 @@ class HybridApplication(val handlers: Map<String, Handler<*, *>>, val main: Wind
             onmessage = { event ->
                 val data = event.data as? String ?: throw IllegalStateException("String cast went wrong")
                 val (jobName, payload) = parseMessage(data)
-                val handler = handlers[jobName]!!
-                val result = handler.invoke(payload)
+                val jobDefinition = jobDefinitions[jobName]!!
+                val result = jobDefinition.handle(payload)
                 val message = generateMessage(jobName, result)
                 postMessage(message)
             }
         }
     }
 
-    fun <TPayload, TResult> launchJob(job: Job<TPayload, TResult>, payload: TPayload, onComplete: (TResult) -> Unit) = mainScope {
-        val message = generateMessage(job.name, job.payloadEncoder.encode(payload))
+    fun <TPayload, TResult> launchJob(job: Job<TPayload, TResult>) {
+        val message = generateMessage(job.definition.name, job.definition.payloadEncoder.encode(job.payload))
 
         val worker = Worker(scriptSrc ?: throw IllegalStateException("Script src is null!"))
         worker.onmessage = { event ->
             val data = event.data as? String  ?: throw IllegalStateException("String cast went wrong")
             val (_, resultData) = parseMessage(data)
-            val result = job.resultEncoder.decode(resultData)
+            val result = job.definition.resultEncoder.decode(resultData)
             worker.terminate()
-            onComplete(result)
+            job.onComplete(result)
         }
         worker.postMessage(message)
     }
@@ -94,11 +92,11 @@ class HybridApplication(val handlers: Map<String, Handler<*, *>>, val main: Wind
 }
 
 class HybridApplicationBuilderScope {
-    val handlers = mutableMapOf<String, HybridApplication.Handler<*, *>>()
+    val handlers = mutableMapOf<String, JobDefinition<*, *>>()
 
     var main: Window.() -> Unit = {}
 
-    fun <TPayload, TResult> registerJob(job: Job<TPayload, TResult>) {
-        handlers[job.name] = HybridApplication.Handler(job)
+    fun <TPayload, TResult> registerJobDefinition(jobDefinition: JobDefinition<TPayload, TResult>) {
+        handlers[jobDefinition.name] = jobDefinition
     }
 }

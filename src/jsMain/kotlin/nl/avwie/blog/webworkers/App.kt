@@ -1,21 +1,19 @@
 package nl.avwie.blog.webworkers
 
 fun main() = HybridApplication {
-    registerJob(MultiplicationJob)
-    registerJob(GreeterJob)
+    registerJobDefinition(MultiplicationJobDefinition)
+    registerJobDefinition(GreeterJobDefinition)
 
     main = {
-        setTimeout({
-            launchJob(GreeterJob, payload = "world") { result ->
-                println("Received result: $result")
-            }
-        }, 1000)
+        val job1 = Job(GreeterJobDefinition, payload = "world") { result ->
+            println("Received result: $result")
+        }
 
+        val job2 = Job(MultiplicationJobDefinition, 10 to 2) { result ->
+            println("Received result: $result")
+        }
 
-        setTimeout({
-            launchJob(MultiplicationJob, 10 to 2) { result ->
-                println("Received result: $result")
-            }
-        }, 2000)
+        setTimeout({ launchJob(job1) }, 1000)
+        setTimeout({ launchJob(job2) }, 2000)
     }
 }
