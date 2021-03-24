@@ -13,12 +13,14 @@ repositories {
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "12"
+            kotlinOptions.jvmTarget = "15"
+            kotlinOptions.useIR = true
         }
     }
 
-    js {
+    js(IR) {
         nodejs()
+        browser()
     }
 
     sourceSets {
