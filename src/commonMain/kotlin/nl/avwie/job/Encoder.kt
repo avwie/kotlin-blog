@@ -1,4 +1,4 @@
-package nl.avwie.blog.webworkers
+package nl.avwie.job
 
 interface Encoder<In, Out> {
     fun encode(input: In): Out
@@ -13,6 +13,11 @@ interface Encoder<In, Out> {
         val Int = object : Encoder<Int, String> {
             override fun encode(input: Int): String = input.toString()
             override fun decode(data: String): Int = data.toInt()
+        }
+
+        val Double = object : Encoder<Double, String> {
+            override fun encode(input: Double): String = input.toString()
+            override fun decode(data: String): Double = data.toDouble()
         }
 
         fun <L, R> Pair(l: Encoder<L, String>, r: Encoder<R, String>, seperator: String = ":") : Encoder<Pair<L, R>, String> = object :

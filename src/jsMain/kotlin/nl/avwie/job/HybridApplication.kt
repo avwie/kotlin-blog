@@ -1,4 +1,4 @@
-package nl.avwie.blog.webworkers
+package nl.avwie.job
 
 import kotlinx.browser.document
 import kotlinx.browser.window
